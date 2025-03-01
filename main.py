@@ -1,44 +1,41 @@
-from re import A, split
+import sys
+from stats import (
+    get_num_words,
+    chars_dict_to_sorted_list,
+    get_chars_dict,
+)
+
 
 def main():
-    book_path = "books/frankestein.txt"
-    book = read_book_data(book_path)
-    list_of_words_in_book = split_the_words(book)
-    number_of_words = length_of_book(list_of_words_in_book)
-    word = "THIS"
-    list_of_char ={}
-    list_of_char = number_of_chars_in_book(word, list_of_words_in_book)
-    print()
-    print(f"--- Begin report of {book_path} ---")
-    print(f"{number_of_words} words found in the document")
-    print()
-    for i in list_of_char:
-        print(f"The '{i}' character was found {list_of_char[i]} times")
-    print("--- End report ---")
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <path_to_book>")
+        sys.exit(1)
+    book_path = sys.argv[1]
+
+    text = get_book_text(book_path)
+    num_words = get_num_words(text)
+    chars_dict = get_chars_dict(text)
+    chars_sorted_list = chars_dict_to_sorted_list(chars_dict)
+    print_report(book_path, num_words, chars_sorted_list)
 
 
-def read_book_data(path):
+def get_book_text(path):
     with open(path) as f:
         return f.read()
 
-def split_the_words(book):
-    words_in_book = book.split()
-    return words_in_book
 
-def length_of_book(list_of_words):
-    return len(list_of_words)
+def print_report(book_path, num_words, chars_sorted_list):
+    print("============ BOOKBOT ============")
+    print(f"Analyzing book found at {book_path}...")
+    print("----------- Word Count ----------")
+    print(f"Found {num_words} total words")
+    print("--------- Character Count -------")
+    for item in chars_sorted_list:
+        if not item["char"].isalpha():
+            continue
+        print(f"{item['char']}: {item['num']}")
 
-def number_of_chars_in_book(word, book_word_list):
-    words = word.lower()
-    a = {}
-    for w in words:
-        a[w] = 0
-    
-    for w in book_word_list:
-        for i in w:
-            if i in a:
-                a[i] += 1
+    print("============= END ===============")
 
-    return a
 
-main() 
+main()
